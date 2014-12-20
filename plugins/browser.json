@@ -6,6 +6,14 @@
     "config_munge": {
         "files": {}
     },
-    "installed_plugins": {},
-    "dependent_plugins": {}
+    "installed_plugins": {
+        "uk.co.ilee.shake": {
+            "PACKAGE_NAME": "de.mua.smartquest"
+        }
+    },
+    "dependent_plugins": {
+        "org.apache.cordova.device-motion": {
+            "PACKAGE_NAME": "de.mua.smartquest"
+        }
+    }
 }
