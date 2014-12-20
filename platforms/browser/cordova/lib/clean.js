@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,17 +18,31 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-* {
-    -webkit-tap-highlight-color: rgba(0,0,0,0); /* make transparent link selection, adjust last value opacity 0 to 1.0 */
-}
+ 
+var fs = require('fs'),
+    shjs = require('shelljs'),
+    path = require('path'),
+    check_reqs = require('./check_reqs'),
+    platformBuildDir = path.join('platforms', 'browser', 'build');
 
-body {
-    -webkit-touch-callout: none;                /* prevent callout to copy image, etc when tap to hold */
-    -webkit-text-size-adjust: none;             /* prevent webkit from resizing text to fit */
-    -webkit-user-select: none;                  /* prevent copy paste, to allow, change 'none' to 'text' */
-}
+exports.cleanProject = function(){
 
-/* Portrait layout (default) */
-.app {
+    // Check that requirements are (stil) met
+    if (!check_reqs.run()) {
+        console.error('Please make sure you meet the software requirements in order to clean an browser cordova project');
+        process.exit(2);
+    }
     
+    console.log('Cleaning Browser project');
+    try {
+        if (fs.existsSync(platformBuildDir)) {
+            shjs.rm('-r', platformBuildDir);
+        }
+    }
+    catch(err) {
+        console.log('could not remove '+platformBuildDir+' : '+err.message);
+    }
+
+
 }
+
