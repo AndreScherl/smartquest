@@ -12,8 +12,19 @@
     </head>
     <body>
         <div class="app">
-            <div id="titlebar">Scores 12345</div>
-            <div id="question">This is the question text</div>
+            <!-- Navigation Bar -->
+            <nav class="navbar navbar-default">
+              <div class="container-fluid">
+                    <p id="scores" class="navbar-text navbar-right">Scores 12345</p>
+              </div>
+            </nav>
+            <!-- Question -->
+            <div class="panel panel-default">
+              <div id="question" class="panel-body">
+                This is the question text.
+              </div>
+            </div>
+            <!-- Answer Buttons -->
             <div id="answers" class="btn-group-vertical" role="group">
                 <button type="button" class="btn btn-default">Answer 1</button>
                 <button type="button" class="btn btn-default">Answer 2</button>
