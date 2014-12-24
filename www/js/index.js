@@ -98,6 +98,17 @@ Gamemanager.prototype.showquestionpage = function(number) {
     app.gr.answers(answers);
 };
 
+/*
+ * evaluate answer
+ * @param qnumber position of question in array
+ * @param uanswer user answer
+ * @return bool right/wrong
+ */
+Gamemanager.prototype.evaluateanswer = function(qnumber, uanswer) {
+    var result = false;
+    
+    return result;
+};
 
 /*
  *
@@ -123,10 +134,10 @@ Gamerenderer.prototype.question = function(question) {
 Gamerenderer.prototype.answers = function(answers) {
     var htmlstring = "";
     answers.forEach(function(answer){
-        htmlstring += "<button type=\"button\">"+ answer +"</button>";
+        htmlstring += "<a href=\"#\">"+ answer +"</a>";
     });
     $("#answers").html(htmlstring);
-    $("#answers button").addClass("btn btn-default");
+    $("#answers a").addClass("list-group-item");
 };
 
 
