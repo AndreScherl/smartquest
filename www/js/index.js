@@ -96,6 +96,8 @@ Gamemanager.prototype.storeAnswers = function(callback) {
  */
 Gamemanager.prototype.showquestionpage = function(number) {
     this.currentquestion = number;
+    // score
+    app.gr.score();
     // question
     app.gr.question(this.questions[number]);
     // answers
@@ -125,12 +127,15 @@ Gamemanager.prototype.evaluateanswer = function(qnumber, uanswer) {
     var result = false;
     if(this.questions[qnumber].answer === uanswer) {
         result = true;
+        this.storerightquestion(this.questions[qnumber].id);
+    } else {
+        this.deletewrongquestion(this.questions[qnumber].id);
     }
-    this.storerightquestion(this.questions[qnumber].id);
+    app.gr.score();
     return result;
 };
 /*
- * store right answered question, delete right question if new answer is wrong
+ * store right answered question
  * @param id - question id
  */
 Gamemanager.prototype.storerightquestion = function(id) {
@@ -146,15 +151,39 @@ Gamemanager.prototype.storerightquestion = function(id) {
     }
     localStorage.setItem("rightquestions", JSON.stringify(rightquestions));
 };
+/*
+ * delete wromg answered question
+ * @param id - question id
+ */
+Gamemanager.prototype.deletewrongquestion = function(id) {
+    var rightquestions = [];
+    if(localStorage.getItem("rightquestions")) {
+        rightquestions = JSON.parse(localStorage.getItem("rightquestions"));
+    }
+    var index = rightquestions.indexOf(id)
+    if(index >= 0) {
+        rightquestions.splice(index, 1);
+    }
+    localStorage.setItem("rightquestions", JSON.stringify(rightquestions));
+};
+/*
+ * calculate game score
+ * @return score
+ */
+Gamemanager.prototype.calculatescore = function() {
+    var score = 0;
+    if(localStorage.getItem("rightquestions")) {
+        score = JSON.parse(localStorage.getItem("rightquestions")).length;
+    }
+    return score;
+};
 
 /*
  *
  * Renderer Class
  *
  */
-function Gamerenderer() {
-
-}
+function Gamerenderer() {}
 /*
  * render question
  * @param object question
@@ -163,7 +192,6 @@ function Gamerenderer() {
 Gamerenderer.prototype.question = function(question) {
     $("#question").html(question.question);
 };
-
 /*
  * render answer
  *
@@ -190,7 +218,6 @@ Gamerenderer.prototype.answers = function(answers) {
         }
     });
 };
-
 /*
  * colorize answer (red=wrong, green=right)
  *
@@ -205,7 +232,6 @@ Gamerenderer.prototype.colorizeanswer = function(answer, color) {
         answer.addClass("list-group-item-success");
     }
 };
-
 /*
  * render question navigation
  *
@@ -225,7 +251,17 @@ Gamerenderer.prototype.questionnavigation = function(number) {
     $("#questionnavigation .previous").attr("data-page", number-1);
     $("#questionnavigation .next").attr("data-page", number+1);
 };
-
+/*
+ * update score
+ */
+Gamerenderer.prototype.score = function() {
+    var score = app.gm.calculatescore();
+    if (score == 1) {
+        $("#score").text(score+" Punkt");
+    } else {
+        $("#score").text(score+" Punkte");
+    }
+};
 
 //! add shuffle method to Array class
 function arrayShuffle(){
