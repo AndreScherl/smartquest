@@ -126,8 +126,25 @@ Gamemanager.prototype.evaluateanswer = function(qnumber, uanswer) {
     if(this.questions[qnumber].answer === uanswer) {
         result = true;
     }
-    //console.log("answer result: "+result);
+    this.storerightquestion(this.questions[qnumber].id);
     return result;
+};
+/*
+ * store right answered question, delete right question if new answer is wrong
+ * @param id - question id
+ */
+Gamemanager.prototype.storerightquestion = function(id) {
+    var rightquestions = [];
+    if(localStorage.getItem("rightquestions")) {
+        rightquestions = JSON.parse(localStorage.getItem("rightquestions"));
+    }
+    var index = rightquestions.indexOf(id)
+    if(index == -1) {
+        rightquestions.push(id);
+    } else {
+        rightquestions.splice(index, 1);
+    }
+    localStorage.setItem("rightquestions", JSON.stringify(rightquestions));
 };
 
 /*
