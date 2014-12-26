@@ -32,6 +32,18 @@ var app = {
             app.gm.storeAnswers(function(ans){
                 console.log(ans);
                 app.gm.showquestionpage(app.gm.currentquestion);
+                $("#questionnavigation .previous").on("touchend", function(){
+                    if(!$(this).hasClass("disabled")) {
+                        app.gm.showquestionpage(parseInt($(this).attr("data-page")));
+                        //console.log("previous question");
+                    }
+                });
+                $("#questionnavigation .next").on("touchend", function(){
+                    if(!$(this).hasClass("disabled")) {
+                        app.gm.showquestionpage(parseInt($(this).attr("data-page")));
+                        //console.log("next question");
+                    }
+                });
             });
         });       
     },
@@ -83,21 +95,26 @@ Gamemanager.prototype.storeAnswers = function(callback) {
  * @param number position of question in array
  */
 Gamemanager.prototype.showquestionpage = function(number) {
+    this.currentquestion = number;
+    // question
     app.gr.question(this.questions[number]);
+    // answers
     var answers = [];
+    answers = answers.concat(this.answers);
     var rightanswer = this.questions[number].answer;
-    answers.push(rightanswer); // add right answer
     // remove right answer from all answers array
-    var index = this.answers.indexOf(rightanswer);
+    var index = answers.indexOf(rightanswer);
     if(index > -1) {
-        this.answers.splice(index, 1);
+        answers.splice(index, 1);
     }
-    this.answers.shuffle(); // shuffle the answers array
-    answers = answers.concat(this.answers.slice(0, numberofanswers-1)); // global limit of answers count per question
+    answers.shuffle(); // shuffle the answers array
+    answers = answers.slice(0, numberofanswers-1); // global limit of answers count per question
+    answers.push(rightanswer); // add right answer
     answers.shuffle(); // shuffle array again
     app.gr.answers(answers);
+    // question navigation
+    app.gr.questionnavigation(number);
 };
-
 /*
  * evaluate answer
  * @param qnumber position of question in array
@@ -106,7 +123,10 @@ Gamemanager.prototype.showquestionpage = function(number) {
  */
 Gamemanager.prototype.evaluateanswer = function(qnumber, uanswer) {
     var result = false;
-    
+    if(this.questions[qnumber].answer === uanswer) {
+        result = true;
+    }
+    //console.log("answer result: "+result);
     return result;
 };
 
@@ -126,6 +146,7 @@ function Gamerenderer() {
 Gamerenderer.prototype.question = function(question) {
     $("#question").html(question.question);
 };
+
 /*
  * render answer
  *
@@ -138,8 +159,55 @@ Gamerenderer.prototype.answers = function(answers) {
     });
     $("#answers").html(htmlstring);
     $("#answers a").addClass("list-group-item");
+    // bind touch event to answers
+    $("#answers a").on("touchend", function(){
+        $(this).addClass("active");
+    });
+    $("#answers a").on("touchend", function(){ //! Touch event reminder: touchstart, touchend, touchcancel, touchmove
+        $(this).removeClass("active");
+        var success = app.gm.evaluateanswer(app.gm.currentquestion, $(this).text());
+        if (success) {
+            app.gr.colorizeanswer($(this), "green");
+        } else {
+            app.gr.colorizeanswer($(this), "red");
+        }
+    });
 };
 
+/*
+ * colorize answer (red=wrong, green=right)
+ *
+ * @param answers - array of answers
+ * @param color - color name string
+ */
+Gamerenderer.prototype.colorizeanswer = function(answer, color) {
+    if (color == "red") {
+        answer.addClass("list-group-item-danger");
+    }
+    if (color == "green") {
+        answer.addClass("list-group-item-success");
+    }
+};
+
+/*
+ * render question navigation
+ *
+ * @param number - number of current question
+ */
+Gamerenderer.prototype.questionnavigation = function(number) {
+    if(number < 1) {
+        $("#questionnavigation .previous").addClass("disabled");
+    } else {
+        $("#questionnavigation .previous").removeClass("disabled");
+    }
+    if (number == app.gm.questions.length-1) {
+        $("#questionnavigation .next").addClass("disabled");   
+    } else {
+        $("#questionnavigation .next").removeClass("disabled"); 
+    }
+    $("#questionnavigation .previous").attr("data-page", number-1);
+    $("#questionnavigation .next").attr("data-page", number+1);
+};
 
 
 //! add shuffle method to Array class
