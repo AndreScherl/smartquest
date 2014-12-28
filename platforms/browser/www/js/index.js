@@ -1,5 +1,6 @@
 // constants. maybe managed by app settings later...
-var csvpath = "res/sample.csv";
+var dataroot = "res/sample/";
+var csvpath = dataroot+"sample.csv";
 var numberofanswers = 3;
 
 var app = {
@@ -125,7 +126,7 @@ Gamemanager.prototype.showquestionpage = function(number) {
  */
 Gamemanager.prototype.evaluateanswer = function(qnumber, uanswer) {
     var result = false;
-    if(this.questions[qnumber].answer === uanswer) {
+    if(this.questions[qnumber].answer == uanswer.replace(dataroot+"img/", "img/")) {
         result = true;
         this.storerightquestion(this.questions[qnumber].id);
     } else {
@@ -190,7 +191,7 @@ function Gamerenderer() {}
  * @param array answers - array of answers
  */
 Gamerenderer.prototype.question = function(question) {
-    $("#question").html(question.question);
+    $("#question").html(question.question.replace("img/", dataroot+"img/"));
 };
 /*
  * render answer
@@ -200,7 +201,7 @@ Gamerenderer.prototype.question = function(question) {
 Gamerenderer.prototype.answers = function(answers) {
     var htmlstring = "";
     answers.forEach(function(answer){
-        htmlstring += "<a href=\"#\">"+ answer +"</a>";
+        htmlstring += "<a href=\"#\">"+ answer.replace("img/", dataroot+"img/") +"</a>";
     });
     $("#answers").html(htmlstring);
     $("#answers a").addClass("list-group-item");
@@ -210,7 +211,7 @@ Gamerenderer.prototype.answers = function(answers) {
     });
     $("#answers a").on("touchend", function(){ //! Touch event reminder: touchstart, touchend, touchcancel, touchmove
         $(this).removeClass("active");
-        var success = app.gm.evaluateanswer(app.gm.currentquestion, $(this).text());
+        var success = app.gm.evaluateanswer(app.gm.currentquestion, $(this).html());
         if (success) {
             app.gr.colorizeanswer($(this), "green");
         } else {
