@@ -147,8 +147,6 @@ Gamemanager.prototype.storerightquestion = function(id) {
     var index = rightquestions.indexOf(id)
     if(index == -1) {
         rightquestions.push(id);
-    } else {
-        rightquestions.splice(index, 1);
     }
     localStorage.setItem("rightquestions", JSON.stringify(rightquestions));
 };
