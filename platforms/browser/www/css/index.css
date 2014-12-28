@@ -30,3 +30,7 @@ body {
 .app {
     
 }
+
+#answers a img {
+	height: 1.5em;
+}
